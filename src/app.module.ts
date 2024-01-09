@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './auth/constants';
 import { CartModule } from './cart/cart.module';
+import { Cart } from './cart/entities/cart.entity';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { CartModule } from './cart/cart.module';
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'friday.db',
-      entities: [Category, Product, Customer],
+      entities: [Category, Product, Customer, Cart],
       synchronize: true,
     }),
     CategoryModule,

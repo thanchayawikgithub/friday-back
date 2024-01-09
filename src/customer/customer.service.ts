@@ -1,18 +1,27 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UseGuards } from '@nestjs/common';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Customer } from './entities/customer.entity';
 import { Repository } from 'typeorm';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { Cart } from 'src/cart/entities/cart.entity';
 
 @Injectable()
+@UseGuards(AuthGuard)
 export class CustomerService {
   constructor(
     @InjectRepository(Customer)
     private customerRepository: Repository<Customer>,
+    @InjectRepository(Cart)
+    private cartRepository: Repository<Cart>,
   ) {}
-  create(createCustomerDto: CreateCustomerDto) {
-    return this.customerRepository.save(createCustomerDto);
+  async create(createCustomerDto: CreateCustomerDto) {
+    const customer = await this.customerRepository.save(createCustomerDto);
+    if (customer) {
+      await this.cartRepository.save({ customer: customer });
+    }
+    return customer;
   }
 
   findAll() {

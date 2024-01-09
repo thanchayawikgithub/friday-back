@@ -1,17 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
+import { Category } from 'src/category/entities/category.entity';
 
 export class CreateProductDto {
-  @ApiProperty()
-  id: number;
-
-  @ApiProperty()
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty()
   description: string;
 
-  @ApiProperty()
+  @IsNotEmpty()
   price: string;
+
+  @IsNotEmpty()
+  categoryId: number;
+
+  image: string;
 }

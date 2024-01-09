@@ -6,17 +6,38 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Post()
-  create(@Body() createProductDto: CreateProductDto) {
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: './product_images',
+        filename: (req, file, cb) => {
+          cb(null, 'product_image_' + file.originalname);
+        },
+      }),
+    }),
+  )
+  create(
+    @Body() createProductDto: CreateProductDto,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    createProductDto.image = image.path;
     return this.productService.create(createProductDto);
   }
 
